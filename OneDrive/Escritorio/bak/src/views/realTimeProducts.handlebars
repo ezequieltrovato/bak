@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Time Products</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="container">
+    <h1>Lista de productos en tiempo real</h1>
+    <ul id="product-list">
+        {{#each products}}
+        <li>{{this}}</li>
+            {{/each}}
+    </ul>
+        <form id="product-form">
+        <input type="text" id="product-name" placeholder="Nombre del producto" required>
+        <button type="submit">Agregar producto</button>
+        </form>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+    const socket = io();
+socket.on('products', (products) => {
+        const productList = document.getElementById('product-list');
+        productList.innerHTML = '';
+        products.forEach((product, index) => {
+        const li = document.createElement('li');
+        li.textContent = product;
+        li.appendChild(createDeleteButton(index));
+        productList.appendChild(li);
+        });
+    });
+document.getElementById('product-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const productName = document.getElementById('product-name').value;
+        socket.emit('newProduct', productName);
+        document.getElementById('product-name').value = '';
+    });
+function createDeleteButton(index) {
+        const button = document.createElement('button');
+        button.textContent = 'Eliminar';
+        button.onclick = () => {
+        socket.emit('deleteProduct', index);
+        };
+        return button;
+    }
+    </script>
+</body>
+</html>
