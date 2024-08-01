@@ -5,7 +5,7 @@ const configureSockets = (io) => {
     console.log('Nuevo cliente conectado');
     socket.emit('products', productsModel.getProducts());
     socket.on('newProduct', (product) => {
-        addProduct(product);
+        productsModel.addProduct(product);
         io.emit('products', productsModel.getProducts());
     });
 socket.on('deleteProduct', (index) => {
